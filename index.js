@@ -11,36 +11,49 @@ const prepare = s =>
 const cache = new Map()
 
 module.exports = cors(async req => {
-  const {
-    user,
-    repo,
-    branch,
-    file,
-    clear
-  } = query(req)
+  const { user, repo, clear } = query(req)
 
   if (clear) {
     cache.clear()
   }
 
-  console.log(cache)
-
-  if (user && repo && branch && file) {
-    const url = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`
+  if (user && repo) {
+    const url = `https://raw.githubusercontent.com/${user}/${repo}/`
 
     if (cache.get(url)) {
       return cache.get(url)
     }
 
-    const res = await fetch(url)
-    const text = await res.text()
-
-    const code = prettier.format(text, {
-      printWidth: 62,
-      semi: false
+    const orderUrl = `${url}master/order.json`
+    console.log(orderUrl)
+    const branches = await fetch(orderUrl).then(async res => {
+      const text = await res.text()
+      console.log(text)
+      return JSON.parse(text)
     })
 
-    cache.set(url, prepare(code))
+    const examples = await Promise.all(
+      branches.map(async branch => {
+        const codeString = await fetch(`${url}${branch}/src/index.js`).then(
+          res => res.text()
+        )
+
+        const prettyCode = prettier.format(codeString, {
+          printWidth: 50,
+          semi: false
+        })
+
+        const code = prepare(prettyCode)
+
+        const markdown = await fetch(`${url}${branch}/src/README.md`).then(
+          res => res.text()
+        )
+
+        return { branch, markdown, code }
+      })
+    )
+
+    cache.set(url, examples)
 
     return cache.get(url)
   } else {
