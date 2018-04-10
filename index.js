@@ -8,7 +8,7 @@ const prepare = s =>
     .replace(/\,[\s\S].*document.*/gm, "")
     .replace(/\n*/, "")
 
-let cache = new Map()
+const cache = new Map()
 
 module.exports = cors(async req => {
   const {
@@ -20,18 +20,15 @@ module.exports = cors(async req => {
   } = query(req)
 
   if (clear) {
-    console.log(`clearing cache`)
     cache.clear()
   }
 
   console.log(cache)
 
   if (user && repo && branch && file) {
-    console.log(`requesting...`)
     const url = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${file}`
 
     if (cache.get(url)) {
-      console.log(`returning from cache`)
       return cache.get(url)
     }
 
@@ -47,7 +44,6 @@ module.exports = cors(async req => {
 
     return cache.get(url)
   } else {
-    console.log(`not found`)
     return "'File not found'"
   }
 })
