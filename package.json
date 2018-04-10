@@ -1,0 +1,16 @@
+{
+  "name": "github-prepare-react-live",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "micro index.js"
+  },
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "micro": "^9.1.4",
+    "micro-cors": "^0.1.0",
+    "micro-query": "^0.2.0",
+    "prettier": "^1.11.1"
+  }
+}
