@@ -4,7 +4,7 @@ const query = require("micro-query")
 const cors = require("micro-cors")()
 const prepare = s =>
   s
-    .replace(/^import.*[\s\S]*from.*/gm, "")
+    .replace(/^import.*[\s\S]*from\s\".*\"/gm, "")
     .replace(/\,[\s\S].*document.*/gm, "")
     .replace(/\n*/, "")
 
